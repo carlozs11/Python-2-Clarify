@@ -16,7 +16,7 @@ DB_PATH = "C:/Users/noturno/Desktop/Python 2 Clarify/"
 #        |___/                                                            
 
 # caminho da pasta
-DB_PATH = "C:/Users/noturno/Desktop/Python 2 Clarify/"
+DB_PATH = "C:/Users/noturno/Desktop/Carlos Antônio/"
 NOMEBANCO = "bancoDeEkite.db"
 TABELA_A = 'drinks.csv'
 TABELA_B = 'avengers.csv'
