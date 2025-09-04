@@ -6,11 +6,11 @@ class Carro:
 
     def acelerar(self, incremento):
             self.velocidade += incremento
-            print(f'O fusca {self.modelo} acelerou para {self.velocidade} Km/h.')
+            print(f'A montana {self.modelo} acelerou para {self.velocidade} Km/h.')
 
     def desacelerar(self, decremento):
          self.velocidade -= decremento
-         print(f'O {self.modelo} desacelerou para {self.velocidade} Km/h.')
+         print(f'A {self.modelo} desacelerou para {self.velocidade} Km/h.')
 
 meu_carro = Carro('Montana', 'Prata', )
 outro_carro = Carro('Golf', 'Vermelho')
