@@ -37,15 +37,14 @@ html_template = f'''
             <li><a href="{rotas[2]}"> Media de consumo por Tipo </a></li>
             <li><a href="{rotas[3]}"> Consumo total por Região </a></li>
             <li><a href="{rotas[4]}"> Comparativo entre tipos de bebidas </a></li>
-            <li><a href="{rotas[5]}"> Insights por pais </a></li>
         </ul>
     <h2> Parte 02 </h2>
         <ul>
-            <li><a href="{rotas [6]}"> Comparar </a></li>
-            <li><a href="{rotas [7]}"> Upload CSV Vingadores </a></li>
-            <li><a href="{rotas [8]}> Apagar Tabela </a></li>
-            <li><a href="{rotas [9]}"> Ver Tabela </a></li>
-            <li><a href="{rotas [10]}"> V.A.A (Vingadores Alcolicos Anonimos) </a></li>
+            <li><a href="{rotas [5]}"> Comparar </a></li>
+            <li><a href="{rotas [6]}"> Upload CSV Vingadores </a></li>
+            <li><a href="{rotas [7]}> Apagar Tabela </a></li>
+            <li><a href="{rotas [8]}"> Ver Tabela </a></li>
+            <li><a href="{rotas [9]}"> V.A.A (Vingadores Alcolicos Anonimos) </a></li>
         </ul>
    '''
 
@@ -64,7 +63,7 @@ def index():
 
 @app.route(rotas[2])
 def grafico1():
-    with sqlite3.connect(f'{caminhoBanco} {nomeBanco}') as conn:
+    with sqlite3.connect(f'{caminhoBanco}{nomeBanco}') as conn:
         df = pd.read_sql_query(consultas.consulta01, conn)
     figuraGrafico1 = px.bar(
         df,
@@ -231,10 +230,9 @@ def apagarTabela(nome_tabela):
 @app.route(rotas[8], methods=["POST","GET"])
 def ver_tabela():
     if request.method == "POST":
-        nome_tabela == request.form.get('tabela')
+        nome_tabela = request.form.get('tabela')
         if nome_tabela not in ['bebidas', 'vingadores']:
             return f"<h3>Tabela {nome_tabela} não encontrada!<h3><br><a href={rotas[8]}>Voltar</a>"
-            href={rotas[8]}>Voltar</a>"
 
         conn =getDbConnect()
         df = pd.real__sql_query(f"SELECT * from {nome_tabela}", conn)
@@ -247,28 +245,101 @@ def ver_tabela():
         '''
 
     
-        return render_template_string('''
-         <h2>Selecione a tabela a ser visualizada:</marquee>
-         <form method="POST">
-        <label for="tabela">Escolha a tabela abaixo:</label>
-         <select> name="tabela">
-            <option value="bebidas">Bebidas</option>
-            <option value="vingadores">Vingadores</option>
-    </select>
-    </form>
-    <hr>
-    <input type="submit"  value="Consultar tabela">
-    <br><a href={{rotas[0]}} >Voltar</a>
+    return render_template_string('''
+        <h2>Selecione a tabela a ser visualizada:</marquee>
+        <form method="POST">
+            <label for="tabela">Escolha a tabela abaixo:</label>
+            <select> name="tabela">
+                <option value="bebidas">Bebidas</option>
+                <option value="vingadores">Vingadores</option>
+            </select>
+        <input type="submit"  value="Consultar tabela">
+        </form>
+        <hr>
+        <br><a href={{rotas[0]}} >Voltar</a>
     ''', rotas=rotas)
 
+app.route(rotas[7], methods=['POST', 'GET'])
+def apagarV2():
+    if request.method == "POST":
+        nome_tabela = request.form.get('tabela')
+        if nome_tabela not in ['bebidas','vingadores']:
+            return f"<h3>Tabela {nome_tabela} não encontrada!<h3><br><a href={rotas[7]}>Voltar</a>"
+        confirmacao = request.form.get('confirmacao')
+        conn = getDbConnect()
+        if confirmacao == "Sim":
+
+            try:
+                cursor = conn.cursor()
+                cursor.execute('SELECT name FROM sqlite_master WHERE type="table" AND name=?', (nome_tabela,))
+                if cursor.fetchone() is None:
+                    return f"<h3>Tabela {nome_tabela} nome não encontrada no banco de dados! </h3><br><a href={rotas[7]}>Voltar</a>"
+                cursor.execute(f'DROP TABLE IF EXISTS "{nome_tabela}"')
+                conn.commit()
+                conn.close()
+                return f"<h3>Tabela {nome_tabela} Excluída com sucesso! </h3><br><a href={rotas[7]}>Voltar</a>"
+
+
+
+            except Exception as erro:
+                conn.close()
+                return f"</h3>Erro ao apagar a tabela {nome_tabela} Erro:{erro} </h3><br><a href={rotas[7]}>Voltar</a>"
+        
+
+
+    
+    return f'''
+    <html>
+        <head>
+        <title><marquee> CUIDADO!- Apagar tabela  </marquee></
+        title>
+        </head>
+        <body>
+        <h2> Selecione a tabela para apagar </h1>
+        <form method="POST" id="formApagar">
+            <label for= "tabela"> Escolha na tabela abaixo: </label>
+            <select name="table" id="tabela">
+            <option> value="bebidas">Bebidas</option>
+            <option value="vingadores">Vingadores</option>
+            <option value="vingadores">Usuarios</option>
+            <select>
+            <input type="hidden" name="confirmacao" value=""id="confirmacao">
+            <input type="submit" value="-- Apagar! --" onclick="return)
+
+        <form>
+        <br><a href={{rotas[0]}} >Voltar</a>
+        <script type="text/javascript">
+            function confirmarExclusao(){{
+                var ok = confirm('Tem certeza de que deja apagar a tabela selecionada?');
+                if(ok) {{
+                    document.getElementById
+                    ('confirmacao').value = 'Não';
+                    return false;
+                }}
+            }}
+        </script>
+        </body>
+    </html>
+        '''
+
+    try:
+        cursor.execute(f'DROP TABLE "{nome_tabela}"')
+        conn.commit()
+        conn.close()
+
+
+    except Exception as erro:
+        conn.close()
+        return f"Não foi possível apagar a tabela erro: {erro}"
+    
     
 
 
  # inica o servidor
      
 
-if __name__ == '__main__':
-    app.run(
+    if __name__ == '__main__':
+        app.run(
             debug=config.FLASK_DEBUG,
             host = config.FLASK_HOST,
             port = config.FLASK_PORT
