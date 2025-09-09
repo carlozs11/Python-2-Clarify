@@ -21,7 +21,7 @@ card_temp_max = 3
 pag_temp_min = 2
 pag_temp_max = 4
 paginaLimite = 2 # limite de páginas
-bancoDados =  "filmes.db"
+bancoDados =  r"C:\Users\noturno\Desktop\Carlos Antônio\filmes.db"
 saidaCSV = f"filmes_adorocinema_{data_hoje}.csv"
 
 for pagina in range(1, paginaLimite +1):
@@ -39,7 +39,7 @@ for pagina in range(1, paginaLimite +1):
     for card in cards:
         try:       
              # captura o título do filme e o hiperlink da página do filme 
-            titulo_tag = card.find("a", class_="meta-tittle-link")
+            titulo_tag = card.find("a", class_="meta-title-link")
             titulo = titulo_tag.text.strip() if titulo_tag else "N/A"
             link = "https://www.adorocinema.com/" + titulo_tag['href'] if titulo_tag else None
 
@@ -79,7 +79,7 @@ for pagina in range(1, paginaLimite +1):
                 if genero_block:
                     genero_links = genero_block.find_all('a')
                     generos = [g.text.strip() for g in genero_links]
-                    categoria = ", ".join(generos[:3] if generos else "N/A")
+                    categoria = ", ".join(generos[:3]) if generos else "N/A"
                 else:
                     categoria = "N/A"
     
@@ -92,7 +92,7 @@ for pagina in range(1, paginaLimite +1):
                 if titulo != "N/A" and link is not None and nota != "N/A":
                     filmes.append({
                     "Titulo": titulo,
-                    "Direção": diretor,
+                    "Direcao": diretor,
                     "Nota": nota,
                     "Link": link,
                     "Ano": ano,
@@ -127,7 +127,7 @@ with sqlite3.connect(bancoDados) as conn:
     # tabela simples: link único para evitar a repetição ao rodar de novo (idempotente)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS filmes(
-            id INTENGER PRIMARY KEY AUTOINCREMENT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             Titulo TEXT,
             Direcao TEXT,
             Nota REAL,
@@ -141,7 +141,7 @@ with sqlite3.connect(bancoDados) as conn:
     for filme in filmes:
         try:
             cursor.execute('''
-                INSERT OR IGNOR INTO filmes (Titulo, Direcao, Nota, Link, Ano, Categoria) VALUES (?, ?, ?, ?, ?, ?)
+                INSERT OR IGNORE INTO filmes (Titulo, Direcao, Nota, Link, Ano, Categoria) VALUES (?, ?, ?, ?, ?, ?)
             ''',(
                 filme['Titulo'],
                 filme['Direcao'],
@@ -152,7 +152,7 @@ with sqlite3.connect(bancoDados) as conn:
             ))
 
         except Exception as erro:
-            print(f'Erro ao inserir filme {filme['Titulo']} no banco de dados. \nDetalhes: {erro}')
+            print(f"Erro ao inserir filme {filme['Titulo']} no banco de dados. \nDetalhes: {erro}")
     conn.commit()
     conn.close()
 
@@ -165,6 +165,8 @@ print("\nObrigado por usar o Sistema de Bot BotMovie")
 print(f"\nIniciado em: {inicio.strftime('%H:%M:%S')}")
 print(f"\nFinalizado em: {termino.strftime('%H:%M:%S')}")
 print("------------------------------------")
+
+
 
 
 
