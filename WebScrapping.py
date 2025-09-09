@@ -121,7 +121,7 @@ df.to_csv(saidaCSV, index=False, encoding='utf-8-sig', quotechar="'",quoting=1)
 
 # SQLite: Criação e insert no banco
 
-with sqlite3.adapt(bancoDados) as conn:
+with sqlite3.connect(bancoDados) as conn:
     cursor = conn.cursor()
 
     # tabela simples: link único para evitar a repetição ao rodar de novo (idempotente)
